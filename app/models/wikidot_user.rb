@@ -1,0 +1,2 @@
+class WikidotUser < ApplicationRecord
+end

@@ -1,0 +1,2 @@
+class ClientAdminAccessLog < ApplicationRecord
+end

@@ -1,0 +1,2 @@
+class SystemAdmin < ApplicationRecord
+end

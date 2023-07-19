@@ -1,0 +1,2 @@
+class ClientAdmin < ApplicationRecord
+end

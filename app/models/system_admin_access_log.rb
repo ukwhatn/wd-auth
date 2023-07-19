@@ -1,0 +1,2 @@
+class SystemAdminAccessLog < ApplicationRecord
+end

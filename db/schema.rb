@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[7.0].define(version: 2021_12_16_184103) do
+ActiveRecord::Schema[7.0].define(version: 2023_07_19_044614) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "plpgsql"
+
+  create_table "access_tokens", force: :cascade do |t|
+    t.bigint "client_id", null: false
+    t.bigint "user_id", null: false
+    t.string "scopes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_access_tokens_on_client_id"
+    t.index ["user_id"], name: "index_access_tokens_on_user_id"
+  end
 
   create_table "action_text_rich_texts", force: :cascade do |t|
     t.string "name", null: false
@@ -52,6 +62,150 @@ ActiveRecord::Schema[7.0].define(version: 2021_12_16_184103) do
     t.index ["blob_id", "variation_digest"], name: "index_active_storage_variant_records_uniqueness", unique: true
   end
 
+  create_table "client_admin_access_logs", force: :cascade do |t|
+    t.bigint "client_admin_id", null: false
+    t.integer "action", null: false
+    t.string "ip", null: false
+    t.string "user_agent", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_admin_id"], name: "index_client_admin_access_logs_on_client_admin_id"
+  end
+
+  create_table "client_admins", force: :cascade do |t|
+    t.bigint "google_user_id"
+    t.bigint "discord_user_id"
+    t.bigint "github_user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discord_user_id"], name: "index_client_admins_on_discord_user_id"
+    t.index ["github_user_id"], name: "index_client_admins_on_github_user_id"
+    t.index ["google_user_id"], name: "index_client_admins_on_google_user_id"
+  end
+
+  create_table "clients", force: :cascade do |t|
+    t.bigint "client_admin_id", null: false
+    t.string "uuid", null: false
+    t.string "secret", null: false
+    t.string "redirect_uri", null: false
+    t.boolean "force_pkce", default: false, null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_admin_id"], name: "index_clients_on_client_admin_id"
+    t.index ["uuid"], name: "index_clients_on_uuid", unique: true
+  end
+
+  create_table "codes", force: :cascade do |t|
+    t.bigint "client_id", null: false
+    t.bigint "user_id", null: false
+    t.string "code_challenge"
+    t.string "scopes"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["client_id"], name: "index_codes_on_client_id"
+    t.index ["user_id"], name: "index_codes_on_user_id"
+  end
+
+  create_table "discord_users", force: :cascade do |t|
+    t.string "uid", null: false
+    t.string "name", null: false
+    t.string "email", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_discord_users_on_email"
+    t.index ["uid"], name: "index_discord_users_on_uid", unique: true
+  end
+
+  create_table "github_users", force: :cascade do |t|
+    t.string "uid", null: false
+    t.string "name", null: false
+    t.string "email", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_github_users_on_email"
+    t.index ["uid"], name: "index_github_users_on_uid", unique: true
+  end
+
+  create_table "google_users", force: :cascade do |t|
+    t.string "uid", null: false
+    t.string "name", null: false
+    t.string "email", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["email"], name: "index_google_users_on_email"
+    t.index ["uid"], name: "index_google_users_on_uid", unique: true
+  end
+
+  create_table "system_admin_access_logs", force: :cascade do |t|
+    t.bigint "system_admin_id", null: false
+    t.integer "action", null: false
+    t.string "ip", null: false
+    t.string "user_agent", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["system_admin_id"], name: "index_system_admin_access_logs_on_system_admin_id"
+  end
+
+  create_table "system_admins", force: :cascade do |t|
+    t.bigint "google_user_id"
+    t.bigint "discord_user_id"
+    t.bigint "github_user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discord_user_id"], name: "index_system_admins_on_discord_user_id"
+    t.index ["github_user_id"], name: "index_system_admins_on_github_user_id"
+    t.index ["google_user_id"], name: "index_system_admins_on_google_user_id"
+  end
+
+  create_table "user_access_logs", force: :cascade do |t|
+    t.bigint "user_id", null: false
+    t.integer "action", null: false
+    t.string "ip", null: false
+    t.string "user_agent", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["user_id"], name: "index_user_access_logs_on_user_id"
+  end
+
+  create_table "users", force: :cascade do |t|
+    t.bigint "google_user_id"
+    t.bigint "discord_user_id"
+    t.bigint "github_user_id"
+    t.bigint "wikidot_user_id"
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["discord_user_id"], name: "index_users_on_discord_user_id"
+    t.index ["github_user_id"], name: "index_users_on_github_user_id"
+    t.index ["google_user_id"], name: "index_users_on_google_user_id"
+    t.index ["wikidot_user_id"], name: "index_users_on_wikidot_user_id"
+  end
+
+  create_table "wikidot_users", force: :cascade do |t|
+    t.string "uid", null: false
+    t.string "name", null: false
+    t.datetime "created_at", null: false
+    t.datetime "updated_at", null: false
+    t.index ["uid"], name: "index_wikidot_users_on_uid", unique: true
+  end
+
+  add_foreign_key "access_tokens", "clients"
+  add_foreign_key "access_tokens", "users"
   add_foreign_key "active_storage_attachments", "active_storage_blobs", column: "blob_id"
   add_foreign_key "active_storage_variant_records", "active_storage_blobs", column: "blob_id"
+  add_foreign_key "client_admin_access_logs", "client_admins"
+  add_foreign_key "client_admins", "discord_users"
+  add_foreign_key "client_admins", "github_users"
+  add_foreign_key "client_admins", "google_users"
+  add_foreign_key "clients", "client_admins"
+  add_foreign_key "codes", "clients"
+  add_foreign_key "codes", "users"
+  add_foreign_key "system_admin_access_logs", "system_admins"
+  add_foreign_key "system_admins", "discord_users"
+  add_foreign_key "system_admins", "github_users"
+  add_foreign_key "system_admins", "google_users"
+  add_foreign_key "user_access_logs", "users"
+  add_foreign_key "users", "discord_users"
+  add_foreign_key "users", "github_users"
+  add_foreign_key "users", "google_users"
+  add_foreign_key "users", "wikidot_users"
 end
